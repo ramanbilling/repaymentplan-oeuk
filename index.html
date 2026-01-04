@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Octopus Energy Payment Plan Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+     
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --dark-bg: #000000; /* Darkened for true dark mode */
+            --card-bg: rgba(18, 18, 18, 0.95); /* Deeper black shade */
+            --surface: rgba(255, 255, 255, 0.03); /* Reduced opacity for darker feel */
+            --surface-hover: rgba(255, 255, 255, 0.05);
+            --text: #f0f0f0; /* Slightly softer white for readability */
+            --text-secondary: #a0a0a0; /* Darker secondary text */
+            --border: rgba(255, 255, 255, 0.08); /* Subtler borders */
+         
+            /* Tab-specific colors (energy-themed, toned down for dark mode) */
+            --emt-primary: #0088cc; /* Darker blue */
+            --billing-primary: #388e3c; /* Darker green */
+            --prepayment-primary: #ef6c00; /* Darker orange */
+            --smartproducts-primary: #7b1fa2; /* Darker purple */
+            --sme-primary: #e64a19; /* Darker deep orange */
+            --vulnerable-primary: #c2185b; /* Darker pink */
+            --export-primary: #689f38; /* Darker light green */
+            /* From payment plan styles, adjusted for darker theme */
+            --background: #00051a; /* Deeper dark blue */
+            --surface: #0d113e; /* Even deeper indigo */
+            --text: #f0f0f0;
+            --text-secondary: #81d4fa;
+            --primary: #b0007a; /* Darker magenta */
+            --primary-dark: #880e4f;
+            --accent: #ffb300; /* Slightly muted orange */
+            --border: #303f9f;
+            --shadow: rgba(0, 0, 0, 0.7); /* Stronger shadows for depth */
+            --warning: #ffd600; /* Muted yellow */
+            --gradient-bg: linear-gradient(135deg, #0d113e, #1a237e);
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        /* Animated gradient background (toned down for subtlety) */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(0, 136, 204, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(56, 142, 60, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(239, 108, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 60% 70%, rgba(104, 159, 56, 0.08) 0%, transparent 50%);
+            animation: gradientShift 25s ease infinite;
+            z-index: 0;
+        }
+        @keyframes gradientShift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, -30px) rotate(90deg); }
+        }
+        /* Floating financial help logos (reduced opacity for cleaner look) */
+        .social-icons-bg {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .floating-icon {
+            position: absolute;
+            font-size: 40px; /* Slightly smaller for refinement */
+            opacity: 0.08; /* Less intrusive */
+            animation: float 30s infinite ease-in-out;
+            color: var(--text-secondary);
+        }
+        /* Positions refined for better distribution */
+        .floating-icon:nth-child(1) { left: 15%; top: 25%; animation-delay: 0s; }
+        .floating-icon:nth-child(2) { left: 75%; top: 15%; animation-delay: 5s; }
+        .floating-icon:nth-child(3) { left: 65%; top: 65%; animation-delay: 2.5s; }
+        .floating-icon:nth-child(4) { left: 20%; top: 75%; animation-delay: 7.5s; }
+        .floating-icon:nth-child(5) { left: 45%; top: 45%; animation-delay: 3.5s; }
+        .floating-icon:nth-child(6) { left: 35%; top: 35%; animation-delay: 6s; }
+        .floating-icon:nth-child(7) { left: 55%; top: 25%; animation-delay: 1.5s; }
+        .floating-icon:nth-child(8) { left: 50%; top: 85%; animation-delay: 8s; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.08; }
+            25% { transform: translateY(-30px) rotate(6deg); opacity: 0.12; }
+            50% { transform: translateY(-50px) rotate(-6deg); opacity: 0.06; }
+            75% { transform: translateY(-30px) rotate(4deg); opacity: 0.10; }
+        }
+        /* Scrollbar styling: transparent, blending with page */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1); /* Semi-transparent, same tone as page */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .header h1 {
+            font-size: 48px; /* Slightly smaller for refinement */
+            font-weight: 800;
+            color: #00e676; /* Softer green for Octopus theme */
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+            animation: fadeIn 1s ease-out;
+        }
+        .header .subtitle {
+            font-size: 18px; /* Refined size */
+            color: var(--text-secondary);
+            font-weight: 500;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header .brand-logos {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            font-size: 48px;
+            color: var(--text-secondary);
+            animation: fadeIn 1.5s ease-out;
+        }
+        /* Tab Navigation refined: smoother transitions, rounded */
+        .tab-navigation {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Tighter gap */
+            margin-bottom: 60px;
+        }
+        .tab-button {
+            background: var(--surface);
+            color: var(--text);
+            padding: 16px 32px; /* Slightly compact */
+            font-size: 16px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            border-radius: 16px; /* Softer radius */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 180px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        .tab-button i {
+            font-size: 24px;
+        }
+        .tab-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+        }
+        .tab-button.active {
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+            transform: scale(1.03);
+        }
+        /* Specific styles per tab, refined gradients */
+        #tab-generator.active { background: linear-gradient(135deg, var(--billing-primary), #2e7d32); }
+        #tab-info.active { background: linear-gradient(135deg, var(--vulnerable-primary), #ad1457); }
+        /* Content cards refined: softer borders, better hover */
+        .tab-content.active .content-card {
+            border-left: 5px solid var(--current-primary, #0088cc);
+        }
+        .tab-content.active .content-card h2 {
+            background: linear-gradient(90deg, var(--current-primary, #0088cc), #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .content-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px; /* Softer */
+            padding: 36px; /* Slightly less padding */
+            margin-bottom: 28px;
+            backdrop-filter: blur(18px);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.8s ease-out;
+        }
+        .content-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+        }
+        .content-card h2 {
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        /* Feedback section refined */
+        .tab-content.active .feedback-section h2 {
+            background: linear-gradient(90deg, var(--current-primary, #0088cc), #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .feedback-section {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px;
+            backdrop-filter: blur(18px);
+            margin-top: 40px;
+            animation: fadeIn 1s ease-out;
+        }
+        .feedback-section iframe {
+            width: 100%;
+            height: 600px;
+            background: transparent;
+        }
+        /* Responsive refinements */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 32px; }
+            .tab-button { padding: 12px 20px; font-size: 14px; min-width: auto; }
+            .content-card { padding: 24px; }
+            .tab-navigation { gap: 12px; }
+            .sub-tab-navigation { flex-direction: column; gap: 16px; }
+        }
+        /* Hidden class for tabs */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .sub-tab-content {
+            display: none;
+        }
+        .sub-tab-content.active {
+            display: block;
+        }
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Styles from payment plan generator, refined */
+        .section {
+            margin-bottom: 28px;
+            animation: fadeIn 0.5s ease;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        select,
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            background-color: #1a237e; /* Darker input bg */
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-sizing: border-box;
+            transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+        }
+        select:focus,
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            transform: scale(1.01);
+            box-shadow: 0 0 10px rgba(176, 0, 122, 0.25);
+        }
+        button {
+            background-color: var(--primary);
+            color: #FFFFFF;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(176, 0, 122, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .generate-button {
+            background: linear-gradient(45deg, var(--primary), var(--accent)); /* Removed animation to keep intact, no spinning/shifting */
+        }
+        .copy-button::before {
+            content: '📋';
+            margin-right: 8px;
+        }
+        textarea {
+            height: 420px; /* Slightly shorter */
+            resize: vertical;
+            font-family: inherit;
+            transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+        }
+        textarea:focus {
+            box-shadow: 0 0 10px rgba(176, 0, 122, 0.25);
+        }
+        .output {
+            margin-top: 28px;
+            padding: 18px;
+            background-color: #1a237e; /* Darker */
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        .output:hover {
+            transform: scale(1.005);
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            transition: transform 0.2s;
+        }
+        .checkbox-group:hover {
+            transform: translateX(3px);
+        }
+        .checkbox-group input[type="checkbox"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background-color: #1a237e;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            margin-right: 10px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .checkbox-group input[type="checkbox"]:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        .checkbox-group input[type="checkbox"]:checked::after {
+            content: '✔';
+            color: #FFFFFF;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 13px;
+        }
+        .checkbox-group label {
+            font-size: 14px;
+            font-weight: normal;
+            margin-bottom: 0;
+        }
+        .checkbox-group .months-input {
+            margin-left: 10px;
+            width: 70px;
+        }
+        .warning {
+            color: var(--warning);
+            font-size: 11px;
+            margin-left: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .button-group {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="social-icons-bg">
+        <div class="floating-icon"><i class="fas fa-piggy-bank"></i></div>
+        <div class="floating-icon"><i class="fas fa-hand-holding-usd"></i></div>
+        <div class="floating-icon"><i class="fas fa-life-ring"></i></div>
+        <div class="floating-icon"><i class="fas fa-dollar-sign"></i></div>
+        <div class="floating-icon"><i class="fas fa-piggy-bank"></i></div>
+        <div class="floating-icon"><i class="fas fa-hand-holding-usd"></i></div>
+        <div class="floating-icon"><i class="fas fa-life-ring"></i></div>
+        <div class="floating-icon"><i class="fas fa-dollar-sign"></i></div>
+    </div>
+    <div class="container">
+        <div class="header">
+            <h1>Octopus Energy Payment Plan Generator</h1>
+            <p class="subtitle">Comprehensive Resources for Debt Repayment, Customer Support, and Financial Assistance</p>
+            <div class="brand-logos">
+                <i class="fas fa-money-bill-wave"></i>
+                <i class="fas fa-headset"></i>
+                <i class="fas fa-heart"></i>
+            </div>
+        </div>
+        <div class="tab-navigation">
+            <button id="tab-generator" class="tab-button active" onclick="openTab(event, 'generator')"><i class="fas fa-calculator"></i> Payment Plan Generator</button>
+            <button id="tab-info" class="tab-button" onclick="openTab(event, 'info')"><i class="fas fa-info-circle"></i> Info</button>
+        </div>
+        <div id="generator" class="tab-content active" style="--current-primary: var(--billing-primary);">
+            <div class="content-card">
+                <h2>Payment Plan Generator for Debt Repayment</h2>
+                <form id="planForm">
+                    <div class="section">
+                        <label for="customerName">Customer Name</label>
+                        <input type="text" id="customerName" name="customerName" placeholder="e.g., John Doe">
+                    </div>
+                    <div class="section">
+                        <label for="totalAmount">Total Amount Owed (£)</label>
+                        <input type="number" id="totalAmount" name="totalAmount" placeholder="e.g., 1200" step="0.01" min="0">
+                    </div>
+                    <div class="section">
+                        <label for="startDate">Plan Start Date</label>
+                        <input type="date" id="startDate" name="startDate">
+                    </div>
+                    <div class="section">
+                        <label>Payment Plan Options (Adjustable Months)</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="plan6" name="plan6" data-default="6" checked>
+                            <label for="plan6">6 Months Plan</label>
+                            <input type="number" id="months6" class="months-input" min="1" step="1" value="6">
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="plan8" name="plan8" data-default="8" checked>
+                            <label for="plan8">8 Months Plan</label>
+                            <input type="number" id="months8" class="months-input" min="1" step="1" value="8">
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="plan10" name="plan10" data-default="10" checked>
+                            <label for="plan10">10 Months Plan</label>
+                            <input type="number" id="months10" class="months-input" min="1" step="1" value="10">
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="plan12" name="plan12" data-default="12" checked>
+                            <label for="plan12">12 Months Plan</label>
+                            <input type="number" id="months12" class="months-input" min="1" step="1" value="12">
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="plan15" name="plan15" data-default="15">
+                            <label for="plan15">15 Months Plan</label>
+                            <input type="number" id="months15" class="months-input hidden" min="1" step="1" value="15">
+                            <span class="warning">Only select once you have consulted with your TL about this additional repayment plan of 15 months.</span>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <label>Additional Options</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="businessAccount" name="businessAccount" checked>
+                            <label for="businessAccount">Business Account (Struggling with Debt)</label>
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" class="generate-button" onclick="generatePlan()">Generate Plan</button>
+                        <button type="button" class="copy-button" onclick="copyPlan()">Copy Email</button>
+                    </div>
+                </form>
+                <div class="output">
+                    <label for="output">Generated Payment Plan Email</label>
+                    <textarea id="output" readonly></textarea>
+                </div>
+            </div>
+        </div>
+        <div id="info" class="tab-content" style="--current-primary: var(--vulnerable-primary);">
+            <div class="content-card">
+                <h2>Enhanced Business Affordability and Vulnerable Support Resources</h2>
+                <p>Octopus Energy is committed to supporting customers facing energy debt. Below is an expanded guide with more detailed information, resources, and contact options to help both business and domestic customers manage their finances effectively.</p>
+                
+                <h3>Support for Business Customers</h3>
+                <p>If your business is struggling with energy bills, Octopus Energy provides tailored payment plans, debt relief options, and dedicated assistance. Key steps include:</p>
+                <ul>
+                    <li>Contact the Octopus Energy Business Support team directly at <strong>0330 808 1080</strong> or email <a href="mailto:business@octopus.energy" style="color: var(--text-secondary);">hello@octopus.energy</a> to discuss repayment plans, extensions, or reductions.</li>
+                    <li>Explore the Octo Assist fund (valued at £40 million in 2025), which, while primarily for domestic users, may offer insights or extensions for small businesses. It includes standing charge holidays, debt matching, grants up to £150, free electric blankets, thermal camera loans, and personalized advice.</li>
+                    <li>Follow Ofgem's affordability guidelines: Negotiate payment breaks, access hardship funds, or extend timelines. Businesses can also get free advice from <strong>Business Debtline</strong> at 0800 197 0266 or visit <a href="https://www.businessdebtline.org/" style="color: var(--text-secondary);">businessdebtline.org</a>.</li>
+                </ul>
+
+                <h2>Support for Vulnerable Domestic Customers</h2>
+                <p>For individuals in vulnerable situations, Octopus Energy prioritizes empathetic support:</p>
+                <ul>
+                    <li>Access the Octo Assist fund for targeted help, including up to 6 months of standing charge relief, debt forgiveness, and energy-saving tools.</li>
+                    <li>Identify vulnerability indicators (e.g., health issues, financial hardship) and get referred to specialist teams.</li>
+                    <li>Comply with Energy UK's Vulnerability Commitment for improved debt management and reduced burdens in 2025.</li>
+                </ul>
+
+                <h3>Additional Resources and Contacts</h3>
+                <ul>
+                    <li>Ofgem Business Guidance: <a href="https://www.ofgem.gov.uk/getting-help-if-your-business-cannot-afford-its-energy-bills" style="color: var(--text-secondary);">Get help if your business cannot afford its energy bills</a></li>
+                    <li>Citizens Advice: <a href="https://www.citizensadvice.org.uk/consumer/energy/energy-supply/get-help-paying-your-bills/struggling-to-pay-your-energy-bills/" style="color: var(--text-secondary);">Struggling to pay your energy bills</a> (includes tips for both domestic and small businesses)</li>
+                    <li>StepChange Debt Charity: <a href="https://www.stepchange.org/debt-info/gas-and-electricity-arrears.aspx" style="color: var(--text-secondary);">Advice on gas and electricity arrears</a></li>
+                    <li>Octopus Energy Blog: <a href="https://octopus.energy/blog/bill-support/" style="color: var(--text-secondary);">Bill support and financial aid</a></li>
+                    <li>Join our internal Slack channel for team discussions and updates: <a href="https://slack.com/app_redirect?channel=octopus-payment-support" style="color: var(--text-secondary);">#octopus-payment-support</a> (for operators and support staff to collaborate on cases).</li>
+                </ul>
+
+                <h3>Best Practices for Operators</h3>
+                <p>Always assess customer situations empathetically: Identify vulnerabilities, offer flexible repayments, and refer to resources. Prioritize welfare and regulatory compliance to ensure positive outcomes.</p>
+            </div>
+            <div class="feedback-section">
+                <h2>Feedback & Improvements</h2>
+                <p>Please select "Info" in the form for this tab or share thoughts in the Slack channel above.</p>
+                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScNHMB2Y11r_YmEAPMua5IlONubPJFHimuvK2LPrU6Ic32u5g/viewform?embedded=true" width="100%" height="600" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openTab(evt, tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+         
+            document.querySelectorAll('.tab-navigation .tab-button').forEach(btn => btn.classList.remove('active'));
+            evt.currentTarget.classList.add('active');
+        }
+     
+        // Payment plan script
+        // Toggle months input visibility and set default
+        const plans = ['6', '8', '10', '12', '15'];
+        plans.forEach(plan => {
+            const checkbox = document.getElementById(`plan${plan}`);
+            const monthsInput = document.getElementById(`months${plan}`);
+            checkbox.addEventListener('change', () => {
+                monthsInput.classList.toggle('hidden', !checkbox.checked);
+                if (checkbox.checked) {
+                    monthsInput.value = checkbox.dataset.default;
+                }
+            });
+            // Initial show/hide
+            monthsInput.classList.toggle('hidden', !checkbox.checked);
+        });
+        // Helper functions
+        function formatCurrency(amount) {
+            const num = parseFloat(amount);
+            return `£${num.toFixed(2)}`;
+        }
+        function addMonths(date, months) {
+            const newDate = new Date(date);
+            newDate.setMonth(newDate.getMonth() + months);
+            return newDate;
+        }
+        function adjustToWeekday(date) {
+            let adjustedDate = new Date(date);
+            const day = adjustedDate.getDay();
+            if (day === 0) { // Sunday
+                adjustedDate.setDate(adjustedDate.getDate() + 1);
+            } else if (day === 6) { // Saturday
+                adjustedDate.setDate(adjustedDate.getDate() + 2);
+            }
+            return adjustedDate;
+        }
+        function formatDateWithDay(date) {
+            const options = { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' };
+            return date.toLocaleDateString('en-GB', options);
+        }
+        function getOrdinal(n) {
+            const s = ["th", "st", "nd", "rd"];
+            const v = n % 100;
+            return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        }
+        function generatePaymentDates(startDate, months) {
+            const dates = [];
+            for (let i = 1; i <= months; i++) {
+                let paymentDate = addMonths(startDate, i - 1);
+                paymentDate = adjustToWeekday(paymentDate);
+                dates.push(formatDateWithDay(paymentDate));
+            }
+            return dates;
+        }
+        function generatePlan() {
+            const customerName = document.getElementById('customerName').value.trim();
+            const greeting = customerName ? `Dear ${customerName},` : 'Hey there,';
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
+            const startDateInput = document.getElementById('startDate').value;
+            let startDate;
+            if (startDateInput) {
+                startDate = new Date(startDateInput);
+            } else {
+                const today = new Date();
+                const currentDay = today.getDate();
+                const currentMonth = today.getMonth();
+                const currentYear = today.getFullYear();
+                if (currentDay <= 28) {
+                    startDate = new Date(currentYear, currentMonth, 28);
+                } else {
+                    startDate = new Date(currentYear, currentMonth + 1, 28);
+                }
+            }
+            const paymentDay = getOrdinal(startDate.getDate());
+            const isBusiness = document.getElementById('businessAccount').checked;
+            let emailContent = `${greeting}\n\nWe are delighted to offer you these customized debt repayment plans designed to help you manage your outstanding balance of ${formatCurrency(totalAmount)} with ease. Each plan features monthly instalments beginning on ${formatDateWithDay(startDate)}, scheduled for the ${paymentDay} of every month. Should this date fall on a weekend, it will be adjusted to the nearest weekday (UK time).\n\n`;
+            plans.forEach(plan => {
+                const checkbox = document.getElementById(`plan${plan}`);
+                if (checkbox.checked) {
+                    const months = parseInt(document.getElementById(`months${plan}`).value) || parseInt(checkbox.dataset.default);
+                    const monthlyAmount = totalAmount / months;
+                    const paymentDates = generatePaymentDates(startDate, months);
+                    emailContent += `${months}-Month Repayment Plan\nMonthly Instalment Amount: ${formatCurrency(monthlyAmount)}\nDetailed Payment Schedule:\n`;
+                    paymentDates.forEach((formattedDate, index) => {
+                        emailContent += `- Instalment ${index + 1}: Due on ${formattedDate}\n`;
+                    });
+                    emailContent += `\n`;
+                }
+            });
+            emailContent += `We invite you to review these options carefully and reach out to our dedicated team to choose and activate your preferred plan or to explore any custom adjustments.\n\nImportant Note: Should an extra payment be taken inadvertently, rest assured that you are covered by the Direct Debit Guarantee. You can file an indemnity claim with your bank for an immediate refund.\n`;
+            if (isBusiness) {
+                emailContent += `\nFor UK businesses navigating energy debt challenges, we provide access to specialized support:\n- Octopus Energy Business Support: Reach us at 0330 808 1080 or email hello@octopus.energy\n- Octopus Assist Fund: Learn more about financial aid at https://octopus.energy/blog/bill-support/\n- Ofgem Business Guidance: https://www.ofgem.gov.uk/getting-help-if-your-business-cannot-afford-its-energy-bills\n- Citizens Advice: Support for energy bills at https://www.citizensadvice.org.uk/consumer/energy/energy-supply/get-help-paying-your-bills/struggling-to-pay-your-energy-bills/\n- StepChange Debt Charity: Advice on gas and electricity arrears at https://www.stepchange.org/debt-info/gas-and-electricity-arrears.aspx\n`;
+            }
+            emailContent += `\nWe are committed to supporting you throughout this process.\n\nBest regards,\nOctopus Energy Team`;
+            document.getElementById('output').value = emailContent.trim();
+        }
+        function copyPlan() {
+            const output = document.getElementById('output');
+            output.select();
+            try {
+                document.execCommand('copy');
+                alert('Plan copied to clipboard!');
+            } catch (err) {
+                alert('Failed to copy plan. Please copy it manually.');
+            }
+        }
+    </script>
+</body>
+</html>
